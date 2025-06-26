@@ -7,6 +7,7 @@
 
 
 #include "usr/lib_J3_ST7789VW.h"
+#include "usr/font5x7.h"
 
 // Handler para a interface SPI (será passado na inicialização)
 static SPI_HandleTypeDef *hspi_ptr;
@@ -223,3 +224,72 @@ void ST7789VW_SetRotation(uint8_t rotation) {
   ST7789VW_SendCommand(0x36); // MADCTL
   ST7789VW_SendData(&madctl, 1);
 }
+
+void ST7789VW_DrawChar(uint16_t x, uint16_t y, char ch, uint16_t textColor, uint16_t bgColor) {
+    if (ch < 32 || ch > 126) return; // Caracteres inválidos
+
+    const uint8_t *bitmap = font5x7[ch - 32];
+
+    for (uint8_t i = 0; i < 5; i++) { // largura da fonte
+        uint8_t line = bitmap[i];
+        for (uint8_t j = 0; j < 7; j++) { // altura da fonte
+            if (line & 0x01) {
+                ST7789VW_DrawPixel(x + i, y + j, textColor);
+            } else {
+            	ST7789VW_DrawPixel(x + i, y + j, bgColor);
+            }
+            line >>= 1;
+        }
+    }
+
+    // Espaço entre caracteres
+    for (uint8_t j = 0; j < 7; j++) {
+    	ST7789VW_DrawPixel(x + 5, y + j, bgColor);
+    }
+}
+
+void ST7789VW_DrawString(uint16_t x, uint16_t y, const char* str, uint16_t textColor, uint16_t bgColor) {
+    while (*str) {
+    	ST7789VW_DrawChar(x, y, *str, textColor, bgColor);
+        x += 6; // 5 pixels de largura + 1 de espaço
+        str++;
+    }
+}
+
+void ST7789VW_DrawCharBig(uint16_t x, uint16_t y, char ch, uint16_t textColor, uint16_t bgColor) {
+    if (ch < 32 || ch > 126) return;
+
+    const uint8_t *bitmap = font5x7[ch - 32];
+
+    for (uint8_t col = 0; col < 5; col++) {
+        uint8_t line = bitmap[col];
+        for (uint8_t row = 0; row < 7; row++) {
+            uint16_t pixelColor = (line & 0x01) ? textColor : bgColor;
+
+            // Desenha pixel em 2x2 (escala 2x)
+            ST7789VW_DrawPixel(x + col * 2,     y + row * 2,     pixelColor);
+            ST7789VW_DrawPixel(x + col * 2 + 1, y + row * 2,     pixelColor);
+            ST7789VW_DrawPixel(x + col * 2,     y + row * 2 + 1, pixelColor);
+            ST7789VW_DrawPixel(x + col * 2 + 1, y + row * 2 + 1, pixelColor);
+
+            line >>= 1;
+        }
+    }
+
+    // Espaço de 2 pixels entre caracteres
+    for (uint8_t dy = 0; dy < 14; dy++) {
+    	ST7789VW_DrawPixel(x + 10, y + dy, bgColor);
+    	ST7789VW_DrawPixel(x + 11, y + dy, bgColor);
+    }
+}
+
+void ST7789VW_DrawStringBig(uint16_t x, uint16_t y, const char* str, uint16_t textColor, uint16_t bgColor) {
+    while (*str) {
+    	ST7789VW_DrawCharBig(x, y, *str, textColor, bgColor);
+        x += 12; // 10 pixels da letra + 2 de espaço
+        str++;
+    }
+}
+
+
+

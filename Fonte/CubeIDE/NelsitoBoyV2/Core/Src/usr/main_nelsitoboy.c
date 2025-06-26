@@ -33,7 +33,14 @@ int main_nelsitoboy(void){
         ST7789VW_FillScreen2(COLOR_LIGHT_GRAY);
         HAL_Delay(5000);
 
-        main_game();
+       // main_game();
+
+        //ST7789VW_DrawChar(50, 50, "N", COLOR_ORANGE, COLOR_LIGHT_GRAY);
+
+        HAL_Delay(5000);
+
+        ST7789VW_DrawStringBig(0, 50, "abcdefghijklmnopqrstuvxz", COLOR_BLACK, COLOR_BLUE);
+        ST7789VW_DrawStringBig(0, 70, "1234567890ñ", COLOR_RED, COLOR_LIGHT_GRAY);
 
         HAL_Delay(5000);
 

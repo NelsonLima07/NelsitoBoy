@@ -31,6 +31,9 @@ void ST7789VW_DrawPixel(uint16_t x, uint16_t y, uint16_t color);
 void ST7789VW_FillScreen(uint16_t color);
 void ST7789VW_FillWindow(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t _cor);
 
+void ST7789VW_DrawChar(uint16_t x, uint16_t y, char ch, uint16_t textColor, uint16_t bgColor);
+void ST7789VW_DrawString(uint16_t x, uint16_t y, const char* str, uint16_t textColor, uint16_t bgColor);
+
 
 
 
